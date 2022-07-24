@@ -1,10 +1,8 @@
 package com.jj.jwt.service
 
-import com.jj.jwt.exception.AuthException
 import com.jj.jwt.model.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -12,9 +10,12 @@ import java.util.*
 @Component
 class JwtTokenProvider {
 
+
+
     companion object {
 
         private val SECRET = "secret"
+//        private val logger = KotlinLogging.logger {}
 
         fun createToken(user: User): String {
 
@@ -27,17 +28,16 @@ class JwtTokenProvider {
         }
 
 
-        fun validateAndGetIssuer(token: String): Int {
+        fun validateAndGetIssuer(token: String): Int? {
             return try {
                 val claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token)
                 if (claims.body.expiration.before(Date())) {
-                    claims.body.issuer.toInt()
-                } else {
-                    throw AuthException("Token expired")
+                    return null
                 }
+                claims.body.issuer.toInt()
             } catch (e: Exception) {
                 println (">>>> ERROR Parsing token " + e.message + "::::" + token)
-                throw AuthException("Auth error ")
+                null
             }
         }
 
