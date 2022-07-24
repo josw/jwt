@@ -2,6 +2,7 @@ package com.jj.jwt.config
 
 import com.jj.jwt.service.UserService
 import org.springframework.context.annotation.Bean
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -10,6 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 //@Configuration
+@EnableGlobalMethodSecurity(securedEnabled = true)
 class SecurityConfig(
         private val userService: UserService
 ) {
@@ -20,11 +22,12 @@ class SecurityConfig(
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeHttpRequests()
-                .antMatchers("/api/login", "/api/register").permitAll()
-                .antMatchers("/api/**").authenticated()
+                    .authorizeHttpRequests()
+                        .antMatchers("/api/login", "/api/register").permitAll()
+                        .antMatchers("/api/**").authenticated()
+        //                .antMatchers("/api/read").hasAnyRole("USER_READ")
                 .and()
-                .addFilterBefore(JwtAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter::class.java)
+                    .addFilterBefore(JwtAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter::class.java)
 
 
 

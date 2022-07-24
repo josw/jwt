@@ -1,21 +1,14 @@
 package com.jj.jwt.controller
 
-import com.jj.jwt.dto.ErrorMessageDTO
 import com.jj.jwt.dto.LoginDTO
 import com.jj.jwt.dto.RegisterDTO
-import com.jj.jwt.exception.AuthException
 import com.jj.jwt.model.Message
 import com.jj.jwt.model.User
 import com.jj.jwt.service.JwtTokenProvider
 import com.jj.jwt.service.UserService
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
-import org.apache.coyote.Response
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
-import java.util.*
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/api")
@@ -35,7 +28,7 @@ class AuthController(
 
     @PostMapping("login")
     fun login(@RequestBody loginDTO: LoginDTO ): ResponseEntity<Any> {
-        var user = userService.findByEmail(loginDTO.email)
+        val user = userService.findByEmail(loginDTO.email)
                 ?: return ResponseEntity.badRequest().body(Message("user not found"))
 
         if (!user.comparePassword(loginDTO.password)) {
@@ -50,6 +43,12 @@ class AuthController(
         return ResponseEntity.ok("Hello")
     }
 
+
+    @GetMapping("/read")
+    @Secured("ROLE_READ")
+    fun read(): ResponseEntity<Any> {
+        return ResponseEntity.ok("READ")
+    }
 
 
 }

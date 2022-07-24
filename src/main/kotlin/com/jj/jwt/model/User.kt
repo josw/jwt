@@ -1,11 +1,7 @@
 package com.jj.jwt.model
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 
 @Entity
@@ -28,6 +24,10 @@ class User {
             val passwordEncoder = BCryptPasswordEncoder()
             field = passwordEncoder.encode(value)
         }
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name="userId")
+    var userRoles: List<UserRole> = mutableListOf()
 
     fun comparePassword(password: String): Boolean {
         return BCryptPasswordEncoder().matches(password, this.password)

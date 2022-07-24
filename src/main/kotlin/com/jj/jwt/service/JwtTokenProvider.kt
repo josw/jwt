@@ -3,6 +3,7 @@ package com.jj.jwt.service
 import com.jj.jwt.model.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -15,13 +16,20 @@ class JwtTokenProvider {
     companion object {
 
         private val SECRET = "secret"
-//        private val logger = KotlinLogging.logger {}
+        private val log = KotlinLogging.logger {}
 
         fun createToken(user: User): String {
 
             val issuer = user.id.toString()
+            val claims = Jwts.claims().setSubject(issuer)
+            val roles = user.userRoles.map { it.role }
+
+            claims.put("roles", roles)
+
+            log.info(" ROLES :::{}", roles)
 
             return Jwts.builder()
+                    .setClaims(claims)
                     .setIssuer(issuer)
                     .setExpiration(Date(System.currentTimeMillis() + 60 * 24 * 1000))
                     .signWith(SignatureAlgorithm.HS256, SECRET).compact()
@@ -40,6 +48,8 @@ class JwtTokenProvider {
                 null
             }
         }
+
+
 
     }
 

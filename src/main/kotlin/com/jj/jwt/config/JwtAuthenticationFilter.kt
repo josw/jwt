@@ -2,8 +2,10 @@ package com.jj.jwt.config
 
 import com.jj.jwt.service.JwtTokenProvider
 import com.jj.jwt.service.UserService
+import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 
 import org.springframework.web.filter.OncePerRequestFilter
@@ -15,7 +17,7 @@ class JwtAuthenticationFilter(
         private val userService: UserService
 ): OncePerRequestFilter () {
 
-//    private val logger = KotlinLogging.logger {}
+    private val log = KotlinLogging.logger {}
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val token: String? = request.getHeader(HttpHeaders.AUTHORIZATION)
@@ -32,10 +34,14 @@ class JwtAuthenticationFilter(
 //            if (issuer == null) return
 
             if (issuer != null) {
-                logger.info("   issuer {$issuer}")
+                log.info("   issuer {$issuer}")
                 val user = userService.findUser(issuer)
 
-                SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, "", null)
+                val authorities = user?.userRoles?.map { SimpleGrantedAuthority(it.role) }
+
+                log.info("~~~~~~ {}", authorities)
+
+                SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(user, "", authorities)
 
             }
 
