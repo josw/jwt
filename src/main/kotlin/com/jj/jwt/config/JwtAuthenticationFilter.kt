@@ -19,7 +19,11 @@ class JwtAuthenticationFilter(
 
     private val log = KotlinLogging.logger {}
 
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         val token: String? = request.getHeader(HttpHeaders.AUTHORIZATION)
 
         println (">>>>>> " + token)
@@ -46,11 +50,6 @@ class JwtAuthenticationFilter(
             }
 
         }
-
-
-
-
-
         filterChain.doFilter(request, response)
     }
 }

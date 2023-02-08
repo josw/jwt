@@ -1,5 +1,6 @@
 package com.jj.jwt.service
 
+import com.jj.jwt.dto.JwtResponse
 import com.jj.jwt.model.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -11,28 +12,27 @@ import java.util.*
 @Component
 class JwtTokenProvider {
 
-
-
     companion object {
 
         private val SECRET = "secret"
         private val log = KotlinLogging.logger {}
 
-        fun createToken(user: User): String {
+        fun createToken(user: User): JwtResponse {
 
             val issuer = user.id.toString()
             val claims = Jwts.claims().setSubject(issuer)
             val roles = user.userRoles.map { it.role }
 
-            claims.put("roles", roles)
+            claims["roles"] = roles
 
             log.info(" ROLES :::{}", roles)
 
-            return Jwts.builder()
+            return JwtResponse(Jwts.builder()
                     .setClaims(claims)
                     .setIssuer(issuer)
-                    .setExpiration(Date(System.currentTimeMillis() + 60 * 24 * 1000))
+                    .setExpiration(Date(System.currentTimeMillis() + 60 * 60 * 24 * 1000))
                     .signWith(SignatureAlgorithm.HS256, SECRET).compact()
+                , null);
         }
 
 
@@ -49,10 +49,5 @@ class JwtTokenProvider {
             }
         }
 
-
-
     }
-
-
-
 }

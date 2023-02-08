@@ -51,4 +51,10 @@ class AuthController(
     }
 
 
+    @GetMapping("/error")
+    @Secured("ROLE_ERROR")
+    fun error(): ResponseEntity<Any> {
+        return ResponseEntity.ok("error!")
+    }
+
 }

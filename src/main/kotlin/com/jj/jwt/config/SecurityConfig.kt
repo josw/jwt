@@ -1,5 +1,6 @@
 package com.jj.jwt.config
 
+import com.jj.jwt.model.Roles
 import com.jj.jwt.service.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -19,15 +20,15 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.httpBasic().disable()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                    .authorizeHttpRequests()
-                        .antMatchers("/api/login", "/api/register").permitAll()
-                        .antMatchers("/api/**").authenticated()
-        //                .antMatchers("/api/read").hasAnyRole("USER_READ")
-                .and()
-                    .addFilterBefore(JwtAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter::class.java)
+            .csrf().disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+                .authorizeHttpRequests()
+                    .antMatchers("/api/login", "/api/register", "/api/hello").permitAll()
+                    .antMatchers("/api/**").authenticated()
+                    .antMatchers("/api/admin").hasAnyRole(Roles.ROLE_ADMIN)
+            .and()
+                .addFilterBefore(JwtAuthenticationFilter(userService), UsernamePasswordAuthenticationFilter::class.java)
 
 
 

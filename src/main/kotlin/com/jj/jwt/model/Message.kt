@@ -1,4 +1,4 @@
 package com.jj.jwt.model
 
-class Message(public val message: String) {
+class Message(val message: String) {
 }
